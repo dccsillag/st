@@ -848,6 +848,12 @@ xsetcolorname(int x, const char *name)
 	XftColorFree(xw.dpy, xw.vis, xw.cmap, &dc.col[x]);
 	dc.col[x] = ncolor;
 
+	if (x == defaultbg) {
+	    dc.col[x].color.alpha = (unsigned short)(0xffff * alpha);
+	    dc.col[x].pixel &= 0x00FFFFFF;
+	    dc.col[x].pixel |= (unsigned char)(0xff * alpha) << 24;
+	}
+
 	return 0;
 }
 
