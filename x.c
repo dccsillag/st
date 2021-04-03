@@ -740,6 +740,11 @@ cresize(int width, int height)
 }
 
 void
+fix_borders(void) {
+	cresize(0, 0);
+}
+
+void
 xresize(int col, int row)
 {
 	win.tw = col * win.cw;
