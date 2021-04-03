@@ -1717,6 +1717,7 @@ csihandle(void)
 			tclearregion(0, term.c.y, term.c.x, term.c.y);
 			break;
 		case 2: /* all */
+			tscrollup(term.c.y, term.row-1);
 			tclearregion(0, 0, term.col-1, term.row-1);
 			break;
 		default:
