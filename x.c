@@ -1,6 +1,7 @@
 /* See LICENSE for license details. */
 #include <errno.h>
 #include <math.h>
+#include <ctype.h>
 #include <limits.h>
 #include <locale.h>
 #include <signal.h>
@@ -762,6 +763,22 @@ sixd_to_16bit(int x)
 int
 xloadcolor(int i, const char *name, Color *ncolor)
 {
+	if (name && name[0] == '%') {
+		int is_number =- strlen(name) > 1;
+		for (int k = 1; k < strlen(name); ++k) {
+			if (!isdigit(name[k])) {
+				is_number = 0;
+				break;
+			}
+		}
+
+		if (is_number) {
+			long int colornum = atoi(name+1);
+			if (0 <= colornum && colornum < 16)
+			    return xloadcolor(i, colorname[colornum], ncolor);
+		}
+	}
+
 	XRenderColor color = { .alpha = 0xffff };
 
 	if (!name) {
