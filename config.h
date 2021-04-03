@@ -7,6 +7,7 @@
  */
 static char *font = "FantasqueSansMono Nerd Font:pixelsize=16:antialias=true:autohint=true";
 static int borderpx = 2;
+static int use_ligatures = 0;
 
 /*
  * What program is execed by st depends of these precedence rules:
