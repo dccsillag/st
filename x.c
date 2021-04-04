@@ -62,6 +62,7 @@ static void zoom(const Arg *);
 static void zoomabs(const Arg *);
 static void zoomreset(const Arg *);
 static void ttysend(const Arg *);
+static void toggleligatures(const Arg *);
 
 /* config.h for applying patches and the configuration. */
 #include "config.h"
@@ -334,6 +335,12 @@ void
 ttysend(const Arg *arg)
 {
 	ttywrite(arg->s, strlen(arg->s), 1);
+}
+
+void
+toggleligatures(const Arg *arg)
+{
+	use_ligatures = !use_ligatures;
 }
 
 int
