@@ -220,6 +220,7 @@ static Shortcut shortcuts[] = {
 	{ ControlMask|ShiftMask,XK_C,           clipcopy,       {.i =  0} },
 	{ ControlMask|ShiftMask,XK_V,           clippaste,      {.i =  0} },
 	{ Mod1Mask,             XK_Escape,      normalMode,     {.i =  0} },
+	{ Mod1Mask,             XK_s,           normalModeAlt,  {.i =  0} },
 };
 
 /*

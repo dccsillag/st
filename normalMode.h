@@ -1,4 +1,5 @@
 void normalMode();
+void normalModeAlt();
 void historyPreDraw();
 void historyOverlay(int x, int y, Glyph* g);
 void historyModeToggle(int start);

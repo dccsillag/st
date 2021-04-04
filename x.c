@@ -808,6 +808,11 @@ xloadcolor(int i, const char *name, Color *ncolor)
 
 void normalMode() { historyModeToggle((win.mode ^=MODE_NORMAL) & MODE_NORMAL); }
 
+void normalModeAlt() {
+	normalMode();
+	kpressHist("s", 1, 0, NULL);
+}
+
 void
 xloadcols(void)
 {
