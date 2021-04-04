@@ -127,7 +127,7 @@ int executeMotion(char const cs, int len, KeySym const *const ks) {
 		if (!IS_SET(MODE_ALTSCREEN)) term.line = &buf[histOff=insertOff];
 	} else if (cs == '0') term.c.x = 0;
 	else if (cs == '$') term.c.x = term.col-1;
-	else if (cs == 't') sel.type = sel.type==SEL_REGULAR ? SEL_RECTANGULAR : SEL_REGULAR;
+	else if (cs == 'z') sel.type = sel.type==SEL_REGULAR ? SEL_RECTANGULAR : SEL_REGULAR;
 	else if (cs == 'n' || cs == 'N') {
 		int const d = ((cs=='N')!=(state.m.search==bw))?-1:1;
 		for (int i = state.m.c; i && findString(d, 0); --i);
