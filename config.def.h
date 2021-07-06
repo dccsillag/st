@@ -222,6 +222,7 @@ static Shortcut shortcuts[] = {
 	{ Mod1Mask,             XK_Escape,      normalMode,     {.i =  0} },
 	{ Mod1Mask,             XK_s,           normalModeAlt,  {.i =  0} },
 	{ Mod1Mask,             XK_l,           toggleligatures,{.i =  0} },
+	{ ControlMask|ShiftMask,XK_I,           invert,         { }       },
 };
 
 /*
