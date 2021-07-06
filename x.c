@@ -52,6 +52,7 @@ typedef struct {
 #define XK_ANY_MOD    UINT_MAX
 #define XK_NO_MOD     0
 #define XK_SWITCH_MOD (1<<13)
+#define COLOR_MAX     USHRT_MAX
 
 /* function definitions used in config.h */
 static void clipcopy(const Arg *);
@@ -81,6 +82,12 @@ static void invert(const Arg *);
 typedef XftDraw *Draw;
 typedef XftColor Color;
 typedef XftGlyphFontSpec GlyphFontSpec;
+
+typedef struct {
+	float hue;
+	float saturation;
+	float value;
+} HSVColor;
 
 /* Purely graphic info */
 typedef struct {
@@ -271,14 +278,111 @@ invert(const Arg *dummy)
 	redraw();
 }
 
+HSVColor rgb2hsv(float r, float g, float b) {
+	// Adapted from https://stackoverflow.com/a/6930407/4803382
+	r /= COLOR_MAX;
+	g /= COLOR_MAX;
+	b /= COLOR_MAX;
+
+	HSVColor hsv;
+	float min, max, delta;
+
+	min = r < g ? r : g;
+	min = min < b ? min : b;
+	max = r > g ? r : g;
+	max = max > b ? max : b;
+
+	hsv.value = max;
+	delta = max - min;
+	if (delta < 0.00001) {
+		hsv.saturation = 0;
+		hsv.hue = 0;
+		return hsv;
+	}
+	if (max > 0.0)
+		hsv.saturation = delta / max;
+	else {
+		hsv.saturation = 0.0;
+		hsv.hue = NAN;
+		return hsv;
+	}
+	if (r >= max)
+		hsv.hue = (g - b) / delta;
+	else if (g >= max)
+		hsv.hue = 2.0 + (b - r) / delta;
+	else
+		hsv.hue = 4.0 + (r - g) / delta;
+	hsv.hue *= 60.0;
+
+	if (hsv.hue < 0.0)
+		hsv.hue += 360.0;
+
+	return hsv;
+}
+
+void hsv2rgb(HSVColor hsv, unsigned short *or, unsigned short *og, unsigned short *ob) {
+	// Adapted from https://stackoverflow.com/a/6930407/4803382
+	double hh, p, q, t, ff;
+	long i;
+	float r, g, b;
+
+	if (hsv.saturation <= 0.0) {
+		*or = hsv.value * (float)COLOR_MAX;
+		*og = hsv.value * (float)COLOR_MAX;
+		*ob = hsv.value * (float)COLOR_MAX;
+		return;
+	}
+	hh = hsv.hue;
+	if (hh >= 360.0) hh = 0.0;
+	hh /= 60.0;
+	i = (long)hh;
+	ff = hh - i;
+
+	p = hsv.value * (1.0 - hsv.saturation);
+	q = hsv.value * (1.0 - hsv.saturation*ff);
+	t = hsv.value * (1.0 - hsv.saturation*(1.0 - ff));
+
+	switch (i) {
+		case 0:
+			r = hsv.value; g = t; b = p;
+			break;
+		case 1:
+			r = q; g = hsv.value; b = p;
+			break;
+		case 2:
+			r = p; g = hsv.value; b = t;
+			break;
+		case 3:
+			r = p; g = q; b = hsv.value;
+			break;
+		case 4:
+			r = t; g = p; b = hsv.value;
+			break;
+		case 5: /* FALLTHROUGH */
+		default:
+			r = hsv.value; g = p; b = q;
+			break;
+	}
+
+	*or = r * (float)COLOR_MAX;
+	*og = g * (float)COLOR_MAX;
+	*ob = b * (float)COLOR_MAX;
+}
+
 Color
 invertedcolor(Color *clr) {
+	HSVColor hsv = rgb2hsv(clr->color.red, clr->color.green, clr->color.blue);
+	unsigned short threshold = 30000;
+	if (clr->color.red >= threshold && clr->color.green >= threshold && clr->color.blue >= threshold)
+		hsv.value = 1.0 - hsv.value;
+	else
+		hsv.value = 1.0 - hsv.value*0.3;
+
 	XRenderColor rc;
+	hsv2rgb(hsv, &rc.red, &rc.green, &rc.blue);
+	rc.alpha = COLOR_MAX;
+	/* rc.alpha = clr->color.alpha; */
 	Color inverted;
-	rc.red = ~clr->color.red;
-	rc.green = ~clr->color.green;
-	rc.blue = ~clr->color.blue;
-	rc.alpha = clr->color.alpha;
 	XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &rc, &inverted);
 	return inverted;
 }
