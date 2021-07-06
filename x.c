@@ -380,8 +380,7 @@ invertedcolor(Color *clr) {
 
 	XRenderColor rc;
 	hsv2rgb(hsv, &rc.red, &rc.green, &rc.blue);
-	rc.alpha = COLOR_MAX;
-	/* rc.alpha = clr->color.alpha; */
+	rc.alpha = clr->color.alpha;
 	Color inverted;
 	XftColorAllocValue(xw.dpy, xw.vis, xw.cmap, &rc, &inverted);
 	return inverted;
