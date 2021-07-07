@@ -372,7 +372,9 @@ void hsv2rgb(HSVColor hsv, unsigned short *or, unsigned short *og, unsigned shor
 Color
 invertedcolor(Color *clr) {
 	HSVColor hsv = rgb2hsv(clr->color.red, clr->color.green, clr->color.blue);
-	if (clr->color.red == clr->color.green && clr->color.green == clr->color.blue)
+	unsigned short min_value = MIN(MIN(clr->color.red, clr->color.green), clr->color.blue);
+	unsigned short max_value = MAX(MAX(clr->color.red, clr->color.green), clr->color.blue);
+	if (max_value - min_value <= 2300)
 		hsv.value = 1.0 - hsv.value;
 	else
 		hsv.value = 1.0 - hsv.value*0.3;
