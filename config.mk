@@ -35,4 +35,3 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 
 # compiler and linker
 # CC = c99
-CFLAGS += -O3
